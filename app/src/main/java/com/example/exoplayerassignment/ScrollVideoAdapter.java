@@ -14,9 +14,15 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
+import androidx.media3.database.DatabaseProvider;
 import androidx.media3.datasource.DataSource;
 import androidx.media3.datasource.DefaultDataSource;
+import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.datasource.cache.CacheDataSource;
+import androidx.media3.datasource.cache.SimpleCache;
+import androidx.media3.exoplayer.DefaultLoadControl;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.LoadControl;
 import androidx.media3.exoplayer.source.MediaSource;
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.media3.ui.PlayerView;
@@ -25,6 +31,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.exoplayerassignment.apiDataClass.Msg;
 
+import java.io.File;
 import java.util.List;
 
 public class ScrollVideoAdapter extends RecyclerView.Adapter<ScrollVideoAdapter.ViewHolder> {
@@ -76,15 +83,13 @@ public class ScrollVideoAdapter extends RecyclerView.Adapter<ScrollVideoAdapter.
             progressBar=itemView.findViewById(R.id.progressBar);
             playerView=itemView.findViewById(R.id.videoPlayerView);
         }
-        @OptIn(markerClass = UnstableApi.class) public void setVideoPath(String videoUrl){
+        @OptIn(markerClass = UnstableApi.class)
+        public void setVideoPath(String videoUrl){
             exoPlayer=new ExoPlayer.Builder(context).build();
             exoPlayer.addListener(new Player.Listener() {
                 @Override
-                public void onPlayerError(PlaybackException error) {
+                public void onPlayerError(@NonNull PlaybackException error) {
                     Player.Listener.super.onPlayerError(error);
-                    int position=viewPager2.getCurrentItem();
-                    videoLinks.remove(viewPager2.getCurrentItem());
-                    notifyItemRemoved(position);
                     Toast.makeText(context,"Cannot Play this video"+error.getErrorCodeName(),Toast.LENGTH_LONG).show();
                 }
 
@@ -97,6 +102,9 @@ public class ScrollVideoAdapter extends RecyclerView.Adapter<ScrollVideoAdapter.
                     }
                 }
             });
+
+
+// Set load control to ExoPlayer
 
             playerView.setPlayer(exoPlayer);
             exoPlayer.seekTo(0);

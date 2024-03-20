@@ -75,9 +75,7 @@ public class ScrollVideoAdapter extends RecyclerView.Adapter<ScrollVideoAdapter.
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         public PlayerView playerView;
-        private ExoPlayer exoPlayer;
-        private MediaSource mediaSource;
-        private ProgressBar progressBar;
+        private final ProgressBar progressBar;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             progressBar=itemView.findViewById(R.id.progressBar);
@@ -85,7 +83,7 @@ public class ScrollVideoAdapter extends RecyclerView.Adapter<ScrollVideoAdapter.
         }
         @OptIn(markerClass = UnstableApi.class)
         public void setVideoPath(String videoUrl){
-            exoPlayer=new ExoPlayer.Builder(context).build();
+            ExoPlayer exoPlayer = new ExoPlayer.Builder(context).build();
             exoPlayer.addListener(new Player.Listener() {
                 @Override
                 public void onPlayerError(@NonNull PlaybackException error) {
@@ -112,7 +110,7 @@ public class ScrollVideoAdapter extends RecyclerView.Adapter<ScrollVideoAdapter.
 
             DataSource.Factory datasourceFactory=new DefaultDataSource.Factory(context);
 
-            mediaSource=new ProgressiveMediaSource.Factory(datasourceFactory)
+            MediaSource mediaSource = new ProgressiveMediaSource.Factory(datasourceFactory)
                     .createMediaSource(MediaItem.fromUri(Uri.parse(videoUrl)));
             exoPlayer.setMediaSource(mediaSource);
             exoPlayer.prepare();
